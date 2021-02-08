@@ -199,7 +199,7 @@ class Pad():
         isMovingInBoundry = self.move(theta, deltaR)
         diff = self.getDiff()
         obs = self.getObs(diff)
-        reward = self.getReward() if isMovingInBoundry else getMinReward()
+        reward = self.getReward() if isMovingInBoundry else self.getMinReward()
         done = True if (diff == 0. or reward < 0) else False
         return obs, reward, done, {}
 
@@ -217,8 +217,11 @@ class Pad():
         self.curLine = copy.deepcopy(self.init_val["l1"])
         self.endLine = copy.deepcopy(self.init_val["l2"])
         self.time = 0
+        diff = self.getDiff()
+        obs = self.getObs(diff)
         if (self.init_val["useRender"]):
             self.rendObj = Render(self.init_val["l1"], self.init_val["l2"], self.shape)
+        return obs
 
     def render(self):
         if(self.useRender):
