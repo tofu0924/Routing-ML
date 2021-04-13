@@ -125,8 +125,8 @@ class DefaultRewardStrategy(RewardStrategy):
             diff_reward = 1000. - float(diff) 
         lenthDiff = abs(pad.curLine.getLength() - pad.endLine.getLength())
         if(time_reward < 0): 
-            return -9999. 
-        return time_reward + diff_reward - 100*lenthDiff
+            return -5999. 
+        return time_reward + diff_reward - 10*lenthDiff
         
     def getMinReward(self, pad) -> float: 
         return -9999.
@@ -163,6 +163,8 @@ class Pad():
         tempLine = copy.deepcopy(self.curLine)
 
         if (theta != 0.):
+            if(self.time %2 != 0):
+                theta = -theta
             self.curLine.rotate(theta)
         if( deltaR != 0.):
             self.curLine.stretch(deltaR)
@@ -199,7 +201,7 @@ class Pad():
         isMovingInBoundry = self.move(theta, deltaR)
         diff = self.getDiff()
         obs = self.getObs(diff)
-        reward = self.getReward() if isMovingInBoundry else getMinReward()
+        reward = self.getReward() if isMovingInBoundry else self.getMinReward()
         done = True if (diff == 0. or reward < 0) else False
         return obs, reward, done, {}
 
@@ -217,8 +219,11 @@ class Pad():
         self.curLine = copy.deepcopy(self.init_val["l1"])
         self.endLine = copy.deepcopy(self.init_val["l2"])
         self.time = 0
+        diff = self.getDiff()
+        obs = self.getObs(diff)
         if (self.init_val["useRender"]):
             self.rendObj = Render(self.init_val["l1"], self.init_val["l2"], self.shape)
+        return obs
 
     def render(self):
         if(self.useRender):

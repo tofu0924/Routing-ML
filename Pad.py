@@ -51,8 +51,14 @@ class Line():
         if(p1Rotation.x < p1Translation.x ):
             c, s = math.cos(-radian), math.sin(-radian)
             p1Rotation = Point(c*p1Translation.x - s*p1Translation.y, s*p1Translation.x + c*p1Translation.y)
+        # self.p1 = self.p2
+        # self.p2 = p1Rotation + self.p1
+        self.p1 = p1Rotation + self.p2
+
+    def changePoints(self):
+        temp = self.p1
         self.p1 = self.p2
-        self.p2 = p1Rotation + self.p1
+        self.p2 = temp
 
     def stretch(self, length):
         #p2 will is stretched
@@ -125,8 +131,8 @@ class DefaultRewardStrategy(RewardStrategy):
             diff_reward = 1000. - float(diff) 
         lenthDiff = abs(pad.curLine.getLength() - pad.endLine.getLength())
         if(time_reward < 0): 
-            return -9999. 
-        return time_reward + diff_reward - 100*lenthDiff
+            return -5999. 
+        return time_reward + diff_reward - 10*lenthDiff
         
     def getMinReward(self, pad) -> float: 
         return -9999.
@@ -146,7 +152,7 @@ class Pad():
     def shape(self, shape):
         self._renderShape = shape
 
-    def __init__(self, startline, endline, rewardStrategy, useRender=False, renderSize=(100,100,3)):
+    def __init__(self, startline, endline, rewardStrategy, clockwise= True, useRender=False, renderSize=(100,100,3)):
         self.init_val = {"l1":startline,"l2":endline, "reward":rewardStrategy, "useRender":useRender}
         self._renderShape = renderSize
         self.curLine = copy.deepcopy(startline)
@@ -154,6 +160,7 @@ class Pad():
         self.time = 0
         self.useRender = useRender
         self._rewardStrategy = rewardStrategy
+        self.clockwise = clockwise
         if(useRender):
             self.rendObj = Render(startline,endline,(100,100,3))
         else:
@@ -163,6 +170,8 @@ class Pad():
         tempLine = copy.deepcopy(self.curLine)
 
         if (theta != 0.):
+            if not self.clockwise:
+                theta = -theta
             self.curLine.rotate(theta)
         if( deltaR != 0.):
             self.curLine.stretch(deltaR)
@@ -192,11 +201,14 @@ class Pad():
     def getMinReward(self) -> float:
         return self._rewardStrategy.getMinReward(self)
 
-    def step(self, theta, deltaR):
+    def step(self, step1degree, extension1pixel, changeDirection):
         # if (deltaR <= 0 ):
             # raise ValueError("radius cannot be negative nor zero!")
         self.time = self.time + 1
-        isMovingInBoundry = self.move(theta, deltaR)
+        isMovingInBoundry = self.move(step1degree, extension1pixel)
+        if changeDirection == 1:
+            self.curLine.changePoints()
+            self.clockwise = not self.clockwise
         diff = self.getDiff()
         obs = self.getObs(diff)
         reward = self.getReward() if isMovingInBoundry else self.getMinReward()
@@ -234,15 +246,55 @@ class Pad():
 if __name__ =="__main__": 
     l1 = Line(Point(1.,2.), Point(2.,10.)) 
     l2 = Line(Point(90.,71.), Point(91.,80.))
-    myPad=Pad(l1, l2, rewardStrategy = DefaultRewardStrategy(),  useRender=True)
-    myPad.step(-35, 0)
+    myPad=Pad(l1, l2, clockwise=True, rewardStrategy=DefaultRewardStrategy(), useRender=True)
+    # myPad.step(step1degree, extension1pixel, changeDirection)
+    
+    for i in range(35):
+        myPad.step(step1degree=1, extension1pixel=0, changeDirection=0)
+    myPad.step(step1degree=0, extension1pixel=0, changeDirection=1)
+    for i in range(35):
+        myPad.step(step1degree=1, extension1pixel=0, changeDirection=0)
+    myPad.step(step1degree=0, extension1pixel=0, changeDirection=1)
+    for i in range(35):
+        myPad.step(step1degree=1, extension1pixel=0, changeDirection=0)
+    myPad.step(step1degree=0, extension1pixel=0, changeDirection=1)
+    for i in range(35):
+        myPad.step(step1degree=1, extension1pixel=0, changeDirection=0)
+    myPad.step(step1degree=0, extension1pixel=0, changeDirection=1)
+
+
     myPad.render().getImage()
     myPad.render().imgshow()
+
     myPad.reset()
-    myPad.move(-35, 0)
+    
+    for i in range(45):
+        myPad.step(step1degree=1, extension1pixel=0, changeDirection=0)
+    myPad.step(step1degree=0, extension1pixel=0, changeDirection=1)
+    for i in range(35):
+        myPad.step(step1degree=1, extension1pixel=0, changeDirection=0)
+    myPad.step(step1degree=0, extension1pixel=0, changeDirection=1)
+    for i in range(55):
+        myPad.step(step1degree=1, extension1pixel=0, changeDirection=0)
+    myPad.step(step1degree=0, extension1pixel=0, changeDirection=1)
+    for i in range(35):
+        myPad.step(step1degree=1, extension1pixel=0, changeDirection=0)
+    myPad.step(step1degree=0, extension1pixel=0, changeDirection=1)
+    for i in range(45):
+        myPad.step(step1degree=1, extension1pixel=0, changeDirection=0)
+    myPad.step(step1degree=0, extension1pixel=0, changeDirection=1)
+    for i in range(35):
+        myPad.step(step1degree=1, extension1pixel=0, changeDirection=0)
+    myPad.step(step1degree=0, extension1pixel=0, changeDirection=1)
+
+    myPad.render().getImage()
+    myPad.render().imgshow()
+
     myPad.reset()
-    myPad.move(-35, 0)
-    myPad.reset()
+
+
+    myPad.render().getImage()
+    myPad.render().imgshow()
     print('------------\n')
     print(myPad.step(-55.,0.))
     print('------------\n')
