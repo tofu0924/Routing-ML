@@ -85,7 +85,7 @@ class Line():
         return self
 
     def __deepcopy__(self, memodict={}):
-        return Line(copy.deepcopy(self._p1), copy.deepcopy(self._p2))
+        return Line(copy.copy(self._p1), copy.copy(self._p2))
     
 class Render(): 
     def __init__(self, startline, endline, shape): 
@@ -123,16 +123,14 @@ class RewardStrategy(ABC):
 
 class DefaultRewardStrategy(RewardStrategy): 
     def getReward(self, pad) -> float: 
-        time_reward = 300. - float(pad.time) 
+        time_reward = 10000. - float(pad.time) 
         diff = pad.getDiff() 
         if(diff == 0.): 
             diff_reward = 10000. 
         else: 
-            diff_reward = 1000. - float(diff) 
+            diff_reward = (1000. - float(diff))*10. 
         lenthDiff = abs(pad.curLine.getLength() - pad.endLine.getLength())
-        if(time_reward < 0): 
-            return -5999. 
-        return time_reward + diff_reward - 10*lenthDiff
+        return diff_reward - 10*lenthDiff
         
     def getMinReward(self, pad) -> float: 
         return -9999.
@@ -155,8 +153,8 @@ class Pad():
     def __init__(self, startline, endline, rewardStrategy, clockwise= True, useRender=False, renderSize=(100,100,3)):
         self.init_val = {"l1":startline,"l2":endline, "reward":rewardStrategy, "useRender":useRender}
         self._renderShape = renderSize
-        self.curLine = copy.deepcopy(startline)
-        self.endLine = copy.deepcopy(endline)
+        self.curLine = copy.copy(startline)
+        self.endLine = copy.copy(endline)
         self.time = 0
         self.useRender = useRender
         self._rewardStrategy = rewardStrategy
@@ -167,7 +165,7 @@ class Pad():
             self.rendObj = []
 
     def move(self, theta, deltaR) -> bool:
-        tempLine = copy.deepcopy(self.curLine)
+        tempLine = copy.copy(self.curLine)
 
         if (theta != 0.):
             if not self.clockwise:
@@ -205,15 +203,16 @@ class Pad():
         # if (deltaR <= 0 ):
             # raise ValueError("radius cannot be negative nor zero!")
         self.time = self.time + 1
+        before_reward = self.getReward()
         isMovingInBoundry = self.move(step1degree, extension1pixel)
         if changeDirection == 1:
             self.curLine.changePoints()
             self.clockwise = not self.clockwise
         diff = self.getDiff()
         obs = self.getObs(diff)
-        reward = self.getReward() if isMovingInBoundry else self.getMinReward()
-        done = True if (diff == 0. or reward < 0) else False
-        return obs, reward, done, {}
+        reward = self.getReward()
+        done = True if (diff == 0. or reward < 0 or (not isMovingInBoundry)) else False
+        return obs, reward-before_reward, done, {}
 
     def getDiff(self):
         p1ToP1 = self.curLine.p1.dist2(self.endLine.p1)
@@ -226,8 +225,8 @@ class Pad():
         return diff1 if diff1 <= diff2 else diff2
 
     def reset(self):
-        self.curLine = copy.deepcopy(self.init_val["l1"])
-        self.endLine = copy.deepcopy(self.init_val["l2"])
+        self.curLine = copy.copy(self.init_val["l1"])
+        self.endLine = copy.copy(self.init_val["l2"])
         self.time = 0
         diff = self.getDiff()
         obs = self.getObs(diff)
