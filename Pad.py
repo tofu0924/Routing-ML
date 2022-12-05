@@ -199,7 +199,7 @@ class Pad():
     def getMinReward(self) -> float:
         return self._rewardStrategy.getMinReward(self)
 
-    def step(self, step1degree, extension1pixel, changeDirection):
+    def step(self, step1degree, changeDirection, extension1pixel):
         # if (deltaR <= 0 ):
             # raise ValueError("radius cannot be negative nor zero!")
         self.time = self.time + 1
@@ -246,20 +246,20 @@ if __name__ =="__main__":
     l1 = Line(Point(1.,2.), Point(2.,10.)) 
     l2 = Line(Point(90.,71.), Point(91.,80.))
     myPad=Pad(l1, l2, clockwise=True, rewardStrategy=DefaultRewardStrategy(), useRender=True)
-    # myPad.step(step1degree, extension1pixel, changeDirection)
+    # myPad.step(step1degree, changeDirection, extension1pixel)
     
     for i in range(35):
-        myPad.step(step1degree=1, extension1pixel=0, changeDirection=0)
-    myPad.step(step1degree=0, extension1pixel=0, changeDirection=1)
+        myPad.step(step1degree=1, changeDirection=0, extension1pixel=0)
+    myPad.step(step1degree=0, changeDirection=1, extension1pixel=0)
     for i in range(35):
-        myPad.step(step1degree=1, extension1pixel=0, changeDirection=0)
-    myPad.step(step1degree=0, extension1pixel=0, changeDirection=1)
+        myPad.step(step1degree=1, changeDirection=0, extension1pixel=0)
+    myPad.step(step1degree=0, changeDirection=1, extension1pixel=0)
     for i in range(35):
-        myPad.step(step1degree=1, extension1pixel=0, changeDirection=0)
-    myPad.step(step1degree=0, extension1pixel=0, changeDirection=1)
+        myPad.step(step1degree=1, changeDirection=0, extension1pixel=0)
+    myPad.step(step1degree=0, changeDirection=1, extension1pixel=0)
     for i in range(35):
-        myPad.step(step1degree=1, extension1pixel=0, changeDirection=0)
-    myPad.step(step1degree=0, extension1pixel=0, changeDirection=1)
+        myPad.step(step1degree=1, changeDirection=0, extension1pixel=0)
+    myPad.step(step1degree=0, changeDirection=1, extension1pixel=0)
 
 
     myPad.render().getImage()
@@ -268,23 +268,23 @@ if __name__ =="__main__":
     myPad.reset()
     
     for i in range(45):
-        myPad.step(step1degree=1, extension1pixel=0, changeDirection=0)
-    myPad.step(step1degree=0, extension1pixel=0, changeDirection=1)
+        myPad.step(step1degree=1, changeDirection=0, extension1pixel=0)
+    myPad.step(step1degree=0, changeDirection=1, extension1pixel=0)
     for i in range(35):
-        myPad.step(step1degree=1, extension1pixel=0, changeDirection=0)
-    myPad.step(step1degree=0, extension1pixel=0, changeDirection=1)
+        myPad.step(step1degree=1, changeDirection=0, extension1pixel=0)
+    myPad.step(step1degree=0, changeDirection=1, extension1pixel=0)
     for i in range(55):
-        myPad.step(step1degree=1, extension1pixel=0, changeDirection=0)
-    myPad.step(step1degree=0, extension1pixel=0, changeDirection=1)
+        myPad.step(step1degree=1, changeDirection=0, extension1pixel=0)
+    myPad.step(step1degree=0, changeDirection=1, extension1pixel=0)
     for i in range(35):
-        myPad.step(step1degree=1, extension1pixel=0, changeDirection=0)
-    myPad.step(step1degree=0, extension1pixel=0, changeDirection=1)
+        myPad.step(step1degree=1, changeDirection=0, extension1pixel=0)
+    myPad.step(step1degree=0, changeDirection=1, extension1pixel=0)
     for i in range(45):
-        myPad.step(step1degree=1, extension1pixel=0, changeDirection=0)
-    myPad.step(step1degree=0, extension1pixel=0, changeDirection=1)
+        myPad.step(step1degree=1, changeDirection=0, extension1pixel=0)
+    myPad.step(step1degree=0, changeDirection=1, extension1pixel=0)
     for i in range(35):
-        myPad.step(step1degree=1, extension1pixel=0, changeDirection=0)
-    myPad.step(step1degree=0, extension1pixel=0, changeDirection=1)
+        myPad.step(step1degree=1, changeDirection=0, extension1pixel=0)
+    myPad.step(step1degree=0, changeDirection=1, extension1pixel=0)
 
     myPad.render().getImage()
     myPad.render().imgshow()
